@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  passwordHash  String         @map("password_hash")
+  fullName      String         @map("full_name")
+  role          String         @default("customer") // admin, staff, customer
+  isActive      Boolean        @default(true) @map("is_active")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  subscriptions Subscription[]
+  invoices      Invoice[]
+
+  @@map("users")
+}
+
+model Product {
+  id            Int              @id @default(autoincrement())
+  name          String
+  ptype         String           @default("software")
+  salesPrice    Float            @default(0) @map("sales_price")
+  costPrice     Float            @default(0) @map("cost_price")
+  notes         String           @default("")
+  variants      ProductVariant[]
+  discounts     Discount[]       @relation("ProductDiscount")
+  RecurringPlan RecurringPlan[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id         Int     @id @default(autoincrement())
+  productId  Int     @map("product_id")
+  name       String
+  priceExtra Float   @default(0) @map("price_extra")
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_variants")
+}
+
+model Tax {
+  id      Int    @id @default(autoincrement())
+  name    String
+  rate    Float  @default(0)
+  taxType String @default("sales") @map("tax_type")
+
+  @@map("taxes")
+}
+
+model RecurringPlan {
+  id            Int                 @id @default(autoincrement())
+  name          String
+  productId     Int?                @map("product_id")
+  price         Float               @default(0)
+  billingPeriod String              @default("monthly") @map("billing_period")
+  minQty        Int                 @default(1) @map("min_qty")
+  dateStart     DateTime?           @map("date_start") @db.Date
+  dateEnd       DateTime?           @map("date_end") @db.Date
+  autoClose     Boolean             @default(false) @map("auto_close")
+  closable      Boolean             @default(true)
+  pausable      Boolean             @default(false)
+  renewable     Boolean             @default(true)
+  product       Product?            @relation(fields: [productId], references: [id])
+  subscriptions Subscription[]
+  templates     QuotationTemplate[]
+
+  @@map("recurring_plans")
+}
+
+model QuotationTemplate {
+  id           Int            @id @default(autoincrement())
+  name         String
+  planId       Int?           @map("plan_id")
+  validityDays Int            @default(30) @map("validity_days")
+  linesJson    String         @default("[]") @map("lines_json")
+  plan         RecurringPlan? @relation(fields: [planId], references: [id])
+
+  @@map("quotation_templates")
+}
+
+model Subscription {
+  id              Int                @id @default(autoincrement())
+  number          String             @unique
+  customerId      Int                @map("customer_id")
+  planId          Int?               @map("plan_id")
+  startDate       DateTime?          @map("start_date") @db.Date
+  expiryDate      DateTime?          @map("expiry_date") @db.Date
+  paymentTerms    String             @default("") @map("payment_terms")
+  state           String             @default("draft")
+  closeReason     String             @default("") @map("close_reason")
+  recurringPrice  Float              @default(0) @map("recurring_price")
+  nextInvoiceDate DateTime?          @map("next_invoice_date") @db.Date
+  lastInvoiceDate DateTime?          @map("last_invoice_date") @db.Date
+  createdAt       DateTime           @default(now()) @map("created_at")
+  customer        User               @relation(fields: [customerId], references: [id])
+  plan            RecurringPlan?     @relation(fields: [planId], references: [id])
+  lines           SubscriptionLine[]
+  invoices        Invoice[]
+  discounts       Discount[]         @relation("SubscriptionDiscount")
+
+  @@map("subscriptions")
+}
+
+model SubscriptionLine {
+  id             Int          @id @default(autoincrement())
+  subscriptionId Int          @map("subscription_id")
+  productId      Int?         @map("product_id")
+  variantId      Int?         @map("variant_id")
+  qty            Float        @default(1)
+  unitPrice      Float        @default(0) @map("unit_price")
+  taxId          Int?         @map("tax_id")
+  amount         Float        @default(0)
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@map("subscription_lines")
+}
+
+model Invoice {
+  id             Int           @id @default(autoincrement())
+  number         String        @unique
+  subscriptionId Int?          @map("subscription_id")
+  customerId     Int           @map("customer_id")
+  date           DateTime      @default(now()) @db.Date
+  state          String        @default("draft")
+  total          Float         @default(0)
+  taxTotal       Float         @default(0) @map("tax_total")
+  discountTotal  Float         @default(0) @map("discount_total")
+  notes          String        @default("")
+  customer       User          @relation(fields: [customerId], references: [id])
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  lines          InvoiceLine[]
+  payments       Payment[]
+
+  @@map("invoices")
+}
+
+model InvoiceLine {
+  id          Int     @id @default(autoincrement())
+  invoiceId   Int     @map("invoice_id")
+  description String  @default("")
+  qty         Float   @default(1)
+  unitPrice   Float   @default(0) @map("unit_price")
+  taxId       Int?    @map("tax_id")
+  taxAmount   Float   @default(0) @map("tax_amount")
+  amount      Float   @default(0)
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_lines")
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  invoiceId Int      @map("invoice_id")
+  method    String   @default("cash")
+  amount    Float    @default(0)
+  date      DateTime @default(now()) @db.Date
+  note      String   @default("")
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model Discount {
+  id             Int           @id @default(autoincrement())
+  name           String
+  dtype          String        @default("percentage")
+  value          Float         @default(0)
+  minQty         Int           @default(0) @map("min_qty")
+  minPurchase    Float         @default(0) @map("min_purchase")
+  startDate      DateTime?     @map("start_date") @db.Date
+  endDate        DateTime?     @map("end_date") @db.Date
+  usageLimit     Int           @default(0) @map("usage_limit")
+  usedCount      Int           @default(0) @map("used_count")
+  appliesTo      String        @default("all") @map("applies_to")
+  productId      Int?          @map("product_id")
+  subscriptionId Int?          @map("subscription_id")
+  active         Boolean       @default(true)
+  product        Product?      @relation("ProductDiscount", fields: [productId], references: [id])
+  subscription   Subscription? @relation("SubscriptionDiscount", fields: [subscriptionId], references: [id])
+
+  @@map("discounts")
+}

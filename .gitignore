@@ -4,5 +4,9 @@ __pycache__/
 *.sqlite
 *.pem
 .env
-static/
-app/
+/static/
+/app/
+brightloop/node_modules/
+brightloop/.next/
+brightloop/.env
+!brightloop/.env.example
