@@ -19,4 +19,3 @@ router.get('/status', authenticate, requireRole('admin','staff'), async (req, re
 });
 
 module.exports = router;
-EOF

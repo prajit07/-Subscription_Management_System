@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth.jsx';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -72,4 +72,4 @@ export default function Layout() {
     </div>
   );
 }
-EOF
+

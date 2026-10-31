@@ -10,4 +10,3 @@ async function seed() {
   process.exit(0);
 }
 seed().catch(e => { console.error('[SEED] FAILED:', e.message); process.exit(1); });
-EOF

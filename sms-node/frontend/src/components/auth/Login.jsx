@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth.jsx';
 import { validateEmail } from '../../utils/validators';
 
 export default function Login() {
@@ -53,4 +53,4 @@ export default function Login() {
     </div>
   );
 }
-EOF
+

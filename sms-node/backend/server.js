@@ -1,4 +1,5 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const express = require('express');
 const helmet  = require('helmet');
 const cors    = require('cors');
@@ -32,4 +33,3 @@ app.listen(PORT, () => {
   if (process.env.NODE_ENV !== 'test') startBillingCron();
 });
 module.exports = app;
-EOF

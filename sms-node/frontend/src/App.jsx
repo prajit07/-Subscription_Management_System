@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth';
+import { useAuth } from './hooks/useAuth.jsx';
 import Layout from './components/dashboard/Layout';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
@@ -62,4 +62,4 @@ export default function App() {
     </BrowserRouter>
   );
 }
-EOF
+

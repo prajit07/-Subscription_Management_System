@@ -10,4 +10,3 @@ async function migrate() {
   process.exit(0);
 }
 migrate().catch(e => { console.error('[MIGRATE] FAILED:', e.message); process.exit(1); });
-EOF

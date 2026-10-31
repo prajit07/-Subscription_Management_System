@@ -32,4 +32,3 @@ router.delete('/:id', authenticate, requireRole('admin'), async (req, res) => {
 });
 
 module.exports = router;
-EOF
