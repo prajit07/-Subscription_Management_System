@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<h1>Reports</h1>
+<div class="grid">
+  <div class="stat"><div class="num">{{active_count}}</div><div class="lbl">Active Subscriptions</div></div>
+  <div class="stat"><div class="num">{{mrr}}</div><div class="lbl">MRR</div></div>
+  <div class="stat"><div class="num">{{arr}}</div><div class="lbl">ARR</div></div>
+  <div class="stat"><div class="num">{{total_invoiced}}</div><div class="lbl">Total Invoiced</div></div>
+  <div class="stat"><div class="num">{{total_paid}}</div><div class="lbl">Total Paid</div></div>
+  <div class="stat"><div class="num">{{outstanding}}</div><div class="lbl">Outstanding</div></div>
+</div>
+<div class="card" style="margin-top:20px">
+  <h3>Overdue Invoices</h3>
+  <table>
+    <tr><th>Number</th><th>Customer</th><th>Date</th><th>Total</th></tr>
+    {% for i in overdue %}
+    <tr><td>{{i.number}}</td><td>{{i.customer.full_name if i.customer else ''}}</td><td>{{i.date}}</td><td>{{i.total}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

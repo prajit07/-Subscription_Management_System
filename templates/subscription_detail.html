@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Subscription {{sub.number}}{% endblock %}
+{% block content %}
+<h1>Subscription {{sub.number}}</h1>
+<div class="card">
+  <p><b>Customer:</b> {{sub.customer.full_name if sub.customer else ''}}</p>
+  <p><b>Plan:</b> {{sub.plan.name if sub.plan else ''}}</p>
+  <p><b>Start:</b> {{sub.start_date}} <b>Expiry:</b> {{sub.expiry_date}}</p>
+  <p><b>Payment terms:</b> {{sub.payment_terms}}</p>
+  <p><b>State:</b> <span class="badge {{sub.state}}">{{sub.state}}</span></p>
+  <p><b>Next invoice date:</b> {{sub.next_invoice_date}}</p>
+  <p><b>Recurring price:</b> {{sub.recurring_price}}</p>
+</div>
+<div class="card">
+  <h3>Lines</h3>
+  <table>
+    <tr><th>Product</th><th>Variant</th><th>Qty</th><th>Unit Price</th><th>Tax</th><th>Amount</th></tr>
+    {% for l in sub.lines %}
+    <tr><td>{{l.product.name if l.product else ''}}</td><td>{{l.variant.name if l.variant else ''}}</td><td>{{l.qty}}</td><td>{{l.unit_price}}</td><td>{{l.tax.name if l.tax else ''}}</td><td>{{l.amount}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h3>Change State</h3>
+  <form method="post" action="/subscriptions/{{sub.id}}/state" style="display:flex;gap:8px;flex-wrap:wrap">
+    <select name="new_state">
+      <option value="draft">draft</option><option value="quotation">quotation</option>
+      <option value="confirmed">confirmed</option><option value="active">active</option><option value="closed">closed</option>
+    </select>
+    <input name="close_reason" placeholder="close reason (if closing)">
+    <button class="btn" type="submit">Update</button>
+  </form>
+</div>
+<div class="card">
+  <h3>Invoices</h3>
+  <table>
+    <tr><th>Number</th><th>Date</th><th>Total</th><th>State</th></tr>
+    {% for i in invoices %}
+    <tr><td><a href="/invoices/{{i.id}}">{{i.number}}</a></td><td>{{i.date}}</td><td>{{i.total}}</td><td><span class="badge {{i.state}}">{{i.state}}</span></td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

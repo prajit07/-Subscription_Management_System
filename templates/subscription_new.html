@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}New Subscription{% endblock %}
+{% block extra %}
+<script>
+function addLine(){
+  const tbody=document.getElementById('lines');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`
+    <td><select class="p" onchange="updPrice(this)">{% for p in products %}<option value="{{p.id}}" data-price="{{p.sales_price}}">{{p.name}}</option>{% endfor %}</select></td>
+    <td><select class="v"><option value="">--</option>{% for v in variants %}<option value="{{v.id}}" data-extra="{{v.price_extra}}" data-product="{{v.product_id}}">{{v.name}} (+{{v.price_extra}})</option>{% endfor %}</select></td>
+    <td><input type="number" class="q" value="1" style="width:60px"></td>
+    <td><input type="number" step="0.01" class="u" value="0" style="width:80px"></td>
+    <td><select class="t"><option value="">--</option>{% for t in taxes %}<option value="{{t.id}}">{{t.name}} ({{t.rate}}%)</option>{% endfor %}</select></td>
+    <td><button type="button" onclick="this.closest('tr').remove()">x</button></td>`;
+  tbody.appendChild(tr);
+  // set default price
+  const sel=tr.querySelector('.p');
+  sel.dispatchEvent(new Event('change'));
+}
+function updPrice(sel){
+  const opt=sel.options[sel.selectedIndex];
+  const price=opt.getAttribute('data-price');
+  const row=sel.closest('tr');
+  row.querySelector('.u').value=price;
+}
+function collect(){
+  const rows=document.querySelectorAll('#lines tr');
+  const arr=[];
+  rows.forEach(r=>{
+    const p=r.querySelector('.p').value;
+    const v=r.querySelector('.v').value;
+    const q=r.querySelector('.q').value;
+    const u=r.querySelector('.u').value;
+    const t=r.querySelector('.t').value;
+    arr.push({product_id:parseInt(p),variant_id:v?parseInt(v):null,qty:parseFloat(q),unit_price:parseFloat(u),tax_id:t?parseInt(t):null});
+  });
+  document.getElementById('lines_json').value=JSON.stringify(arr);
+  return true;
+}
+window.onload=function(){ if(document.getElementById('lines').children.length===0) addLine(); };
+</script>
+{% endblock %}
+{% block content %}
+<h1>New Subscription</h1>
+{% if selected_tpl %}
+<div class="card">Using template: {{selected_tpl.name}}</div>
+{% endif %}
+<form method="post" action="/subscriptions/create" onsubmit="return collect()">
+  <div class="card">
+    <div class="formrow">
+      <div><label>Customer</label><select name="customer_id" required>{% for c in customers %}<option value="{{c.id}}">{{c.full_name}} ({{c.email}})</option>{% endfor %}</select></div>
+      <div><label>Plan</label><select name="plan_id"><option value="">--</option>{% for p in plans %}<option value="{{p.id}}" {% if selected_tpl and selected_tpl.plan_id==p.id %}selected{% endif %}>{{p.name}}</option>{% endfor %}</select></div>
+      <div><label>Start date</label><input type="date" name="start_date" value="{{ today }}"></div>
+      <div><label>Expiry date</label><input type="date" name="expiry_date"></div>
+      <div style="grid-column:1/-1"><label>Payment terms</label><input name="payment_terms"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Lines</h3>
+    <button type="button" class="btn secondary" onclick="addLine()">Add Line</button>
+    <table><thead><tr><th>Product</th><th>Variant</th><th>Qty</th><th>Unit Price</th><th>Tax</th><th></th></tr></thead>
+    <tbody id="lines"></tbody></table>
+    <input type="hidden" name="lines_json" id="lines_json" value="[]">
+  </div>
+  <button class="btn" type="submit">Create Subscription</button>
+</form>
+{% endblock %}

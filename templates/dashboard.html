@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="grid">
+  <div class="stat"><div class="num">{{active_subs}}</div><div class="lbl">Active Subscriptions</div></div>
+  <div class="stat"><div class="num">{{total_subs}}</div><div class="lbl">Total Subscriptions</div></div>
+  <div class="stat"><div class="num">{{products}}</div><div class="lbl">Products</div></div>
+  <div class="stat"><div class="num">{{customers}}</div><div class="lbl">Customers</div></div>
+  <div class="stat"><div class="num">{{total_revenue}}</div><div class="lbl">Total Invoiced</div></div>
+  <div class="stat"><div class="num">{{paid}}</div><div class="lbl">Paid</div></div>
+  <div class="stat"><div class="num">{{outstanding}}</div><div class="lbl">Outstanding</div></div>
+  <div class="stat"><div class="num">{{overdue_count}}</div><div class="lbl">Overdue (>30d)</div></div>
+</div>
+<div class="card" style="margin-top:20px">
+  <h3>Recent Invoices</h3>
+  <table>
+    <tr><th>Number</th><th>Customer</th><th>Date</th><th>Total</th><th>State</th></tr>
+    {% for i in recent_invoices %}
+    <tr>
+      <td><a href="/invoices/{{i.id}}">{{i.number}}</a></td>
+      <td>{{i.customer.full_name if i.customer else ''}}</td>
+      <td>{{i.date}}</td>
+      <td>{{i.total}}</td>
+      <td><span class="badge {{i.state}}">{{i.state}}</span></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h3>Quick Actions</h3>
+  <form method="post" action="/billing/run" style="display:inline">
+    <button class="btn success" type="submit">Run Billing Now</button>
+  </form>
+  <a class="btn" href="/subscriptions/new">New Subscription</a>
+  <a class="btn secondary" href="/reports">View Reports</a>
+</div>
+{% endblock %}

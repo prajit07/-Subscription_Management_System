@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Quotation Templates{% endblock %}
+{% block content %}
+<h1>Quotation Templates</h1>
+<div class="card">
+  <form method="post" action="/templates/create" class="formrow">
+    <div><label>Name</label><input name="name" required></div>
+    <div><label>Plan</label><select name="plan_id"><option value="">--</option>{% for p in plans %}<option value="{{p.id}}">{{p.name}}</option>{% endfor %}</select></div>
+    <div><label>Validity days</label><input type="number" name="validity_days" value="30"></div>
+    <div style="grid-column:1/-1"><label>Lines JSON (list of {product_id,variant_id,qty,unit_price,tax_id})</label><textarea name="lines_json">[]</textarea></div>
+    <div><button class="btn" type="submit">Add Template</button></div>
+  </form>
+</div>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Plan</th><th>Validity</th><th>Lines</th></tr>
+    {% for t in templates %}
+    <tr><td>{{t.id}}</td><td>{{t.name}}</td><td>{{t.plan.name if t.plan else ''}}</td><td>{{t.validity_days}}</td><td>{{t.lines_json}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Invoice {{inv.number}}{% endblock %}
+{% block content %}
+<h1>Invoice {{inv.number}}</h1>
+<div class="card">
+  <p><b>Customer:</b> {{inv.customer.full_name if inv.customer else ''}}</p>
+  <p><b>Date:</b> {{inv.date}} <b>State:</b> <span class="badge {{inv.state}}">{{inv.state}}</span></p>
+  <p><b>Total:</b> {{inv.total}} <b>Tax:</b> {{inv.tax_total}} <b>Discount:</b> {{inv.discount_total}}</p>
+</div>
+<div class="card">
+  <table>
+    <tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Tax</th><th>Amount</th></tr>
+    {% for l in inv.lines %}
+    <tr><td>{{l.description}}</td><td>{{l.qty}}</td><td>{{l.unit_price}}</td><td>{{l.tax_amount}}</td><td>{{l.amount}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h3>Payments</h3>
+  <table>
+    <tr><th>Date</th><th>Method</th><th>Amount</th><th>Note</th></tr>
+    {% for p in inv.payments %}
+    <tr><td>{{p.date}}</td><td>{{p.method}}</td><td>{{p.amount}}</td><td>{{p.note}}</td></tr>
+    {% endfor %}
+  </table>
+  <form method="post" action="/invoices/{{inv.id}}/pay" class="formrow" style="margin-top:12px">
+    <div><label>Method</label><select name="method"><option>cash</option><option>card</option><option>bank_transfer</option><option>upi</option></select></div>
+    <div><label>Amount (0=full)</label><input type="number" step="0.01" name="amount" value="0"></div>
+    <div style="grid-column:1/-1"><label>Note</label><input name="note"></div>
+    <div><button class="btn success" type="submit">Record Payment</button></div>
+  </form>
+</div>
+<div class="card" style="display:flex;gap:8px">
+  <form method="post" action="/invoices/{{inv.id}}/confirm"><button class="btn" type="submit">Confirm</button></form>
+  <form method="post" action="/invoices/{{inv.id}}/cancel"><button class="btn danger" type="submit">Cancel</button></form>
+</div>
+{% endblock %}

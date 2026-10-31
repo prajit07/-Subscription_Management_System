@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}My Portal{% endblock %}
+{% block content %}
+<h1>My Portal</h1>
+<div class="card">
+  <h3>My Subscriptions</h3>
+  <table>
+    <tr><th>Number</th><th>Plan</th><th>Start</th><th>Expiry</th><th>State</th></tr>
+    {% for s in subs %}
+    <tr><td>{{s.number}}</td><td>{{s.plan.name if s.plan else ''}}</td><td>{{s.start_date}}</td><td>{{s.expiry_date}}</td><td><span class="badge {{s.state}}">{{s.state}}</span></td></tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h3>My Invoices</h3>
+  <table>
+    <tr><th>Number</th><th>Date</th><th>Total</th><th>State</th></tr>
+    {% for i in invoices %}
+    <tr><td>{{i.number}}</td><td>{{i.date}}</td><td>{{i.total}}</td><td><span class="badge {{i.state}}">{{i.state}}</span></td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

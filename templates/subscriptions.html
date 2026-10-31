@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Subscriptions{% endblock %}
+{% block content %}
+<h1>Subscriptions</h1>
+<div style="margin-bottom:12px">
+  <a class="btn" href="/subscriptions/new">New Subscription</a>
+  <a class="btn secondary" href="/subscriptions?state=draft">Draft</a>
+  <a class="btn secondary" href="/subscriptions?state=quotation">Quotation</a>
+  <a class="btn secondary" href="/subscriptions?state=confirmed">Confirmed</a>
+  <a class="btn secondary" href="/subscriptions?state=active">Active</a>
+  <a class="btn secondary" href="/subscriptions?state=closed">Closed</a>
+  <a class="btn secondary" href="/subscriptions">All</a>
+</div>
+<div class="card">
+  <table>
+    <tr><th>Number</th><th>Customer</th><th>Plan</th><th>Start</th><th>Expiry</th><th>State</th><th>Action</th></tr>
+    {% for s in subs %}
+    <tr>
+      <td><a href="/subscriptions/{{s.id}}">{{s.number}}</a></td>
+      <td>{{s.customer.full_name if s.customer else ''}}</td>
+      <td>{{s.plan.name if s.plan else ''}}</td>
+      <td>{{s.start_date}}</td>
+      <td>{{s.expiry_date}}</td>
+      <td><span class="badge {{s.state}}">{{s.state}}</span></td>
+      <td><a href="/subscriptions/{{s.id}}">View</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

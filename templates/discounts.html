@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Discounts{% endblock %}
+{% block content %}
+<h1>Discounts</h1>
+<div class="card">
+  <form method="post" action="/discounts/create" class="formrow">
+    <div><label>Name</label><input name="name" required></div>
+    <div><label>Type</label><select name="dtype"><option value="percentage">percentage</option><option value="fixed">fixed</option></select></div>
+    <div><label>Value</label><input type="number" step="0.01" name="value" value="0"></div>
+    <div><label>Min qty</label><input type="number" name="min_qty" value="0"></div>
+    <div><label>Min purchase</label><input type="number" step="0.01" name="min_purchase" value="0"></div>
+    <div><label>Start date</label><input type="date" name="start_date"></div>
+    <div><label>End date</label><input type="date" name="end_date"></div>
+    <div><label>Usage limit (0=unlimited)</label><input type="number" name="usage_limit" value="0"></div>
+    <div><label>Applies to</label><select name="applies_to"><option value="all">all</option><option value="product">product</option><option value="subscription">subscription</option></select></div>
+    <div><label>Product</label><select name="product_id"><option value="">--</option>{% for p in products %}<option value="{{p.id}}">{{p.name}}</option>{% endfor %}</select></div>
+    <div><label>Subscription</label><select name="subscription_id"><option value="">--</option>{% for s in subs %}<option value="{{s.id}}">{{s.number}}</option>{% endfor %}</select></div>
+    <div><button class="btn" type="submit">Add Discount</button></div>
+  </form>
+</div>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Type</th><th>Value</th><th>Applies</th><th>Used</th><th>Active</th></tr>
+    {% for d in discounts %}
+    <tr><td>{{d.id}}</td><td>{{d.name}}</td><td>{{d.dtype}}</td><td>{{d.value}}</td><td>{{d.applies_to}}</td><td>{{d.used_count}}/{{d.usage_limit or '∞'}}</td><td>{{d.active}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

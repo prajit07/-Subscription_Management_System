@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<h1>Users</h1>
+<div class="card">
+  <h3>Add Staff (Admin only)</h3>
+  <form method="post" action="/users/add_staff" class="formrow">
+    <div><label>Email</label><input type="email" name="email" required></div>
+    <div><label>Full name</label><input name="full_name" required></div>
+    <div><label>Password</label><input type="password" name="password" required></div>
+    <div style="align-self:end"><button class="btn" type="submit">Add Staff</button></div>
+  </form>
+</div>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th></tr>
+    {% for u in users %}
+    <tr><td>{{u.id}}</td><td>{{u.full_name}}</td><td>{{u.email}}</td><td>{{u.role}}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Subscription Management{% endblock %}</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--muted:#94a3b8;--text:#e2e8f0;--accent:#3b82f6;--accent2:#22c55e;--danger:#ef4444;--warn:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--accent);text-decoration:none}
+nav{background:#0b1220;padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #1f2a44}
+nav .brand{font-weight:700;font-size:18px;color:#fff;margin-right:12px}
+nav a{color:#cbd5e1;font-size:14px}
+nav a:hover{color:#fff}
+.container{max-width:1200px;margin:24px auto;padding:0 20px}
+.card{background:var(--card);border:1px solid #2a3655;border-radius:12px;padding:20px;margin-bottom:20px}
+h1,h2,h3{margin-top:0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;border-bottom:1px solid #2a3655;text-align:left}
+th{color:var(--muted);font-weight:600}
+.btn{display:inline-block;padding:8px 14px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:14px}
+.btn.secondary{background:#334155}
+.btn.danger{background:var(--danger)}
+.btn.success{background:var(--accent2)}
+input,select,textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:var(--text);margin:4px 0 12px}
+label{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.stat{background:#0f172a;border:1px solid #2a3655;border-radius:10px;padding:16px}
+.stat .num{font-size:24px;font-weight:700}
+.stat .lbl{color:var(--muted);font-size:13px}
+.badge{padding:3px 8px;border-radius:6px;font-size:12px;background:#334155}
+.badge.active{background:#16a34a}
+.badge.draft{background:#475569}
+.badge.paid{background:#16a34a}
+.badge.confirmed{background:#2563eb}
+.alert{padding:10px 14px;border-radius:8px;margin-bottom:16px;background:#7f1d1d;color:#fecaca}
+.formrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.formrow{grid-template-columns:1fr}}
+</style>
+{% block extra %}{% endblock %}
+</head>
+<body>
+<nav>
+  <span class="brand">Brightloop Subscriptions</span>
+  {% if user %}
+    {% if user.role in ['admin','staff'] %}
+      <a href="/dashboard">Dashboard</a>
+      <a href="/products">Products</a>
+      <a href="/plans">Plans</a>
+      <a href="/subscriptions">Subscriptions</a>
+      <a href="/invoices">Invoices</a>
+      <a href="/discounts">Discounts</a>
+      <a href="/taxes">Taxes</a>
+      <a href="/templates">Templates</a>
+      <a href="/reports">Reports</a>
+      {% if user.role=='admin' %}<a href="/users">Users</a>{% endif %}
+    {% else %}
+      <a href="/portal">My Portal</a>
+    {% endif %}
+    <a href="/logout" style="margin-left:auto">Logout ({{user.full_name}})</a>
+  {% else %}
+    <a href="/login">Login</a>
+    <a href="/register">Register</a>
+  {% endif %}
+</nav>
+<div class="container">
+  {% block content %}{% endblock %}
+</div>
+</body>
+</html>

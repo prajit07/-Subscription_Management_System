@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<h1>Products</h1>
+<div class="card">
+  <h3>Add Product</h3>
+  <form method="post" action="/products/create" class="formrow">
+    <div><label>Name</label><input name="name" required></div>
+    <div><label>Type</label><select name="ptype"><option value="software">software</option><option value="addon">addon</option></select></div>
+    <div><label>Sales price</label><input type="number" step="0.01" name="sales_price" value="0"></div>
+    <div><label>Cost price</label><input type="number" step="0.01" name="cost_price" value="0"></div>
+    <div style="grid-column:1/-1"><label>Notes</label><textarea name="notes"></textarea></div>
+    <div><button class="btn" type="submit">Add</button></div>
+  </form>
+</div>
+<div class="card">
+  <table>
+    <tr><th>ID</th><th>Name</th><th>Type</th><th>Sales</th><th>Cost</th><th>Variants</th><th>Add Variant</th></tr>
+    {% for p in products %}
+    <tr>
+      <td>{{p.id}}</td><td>{{p.name}}</td><td>{{p.ptype}}</td><td>{{p.sales_price}}</td><td>{{p.cost_price}}</td>
+      <td>{% for v in p.variants %}{{v.name}}(+{{v.price_extra}}) {% endfor %}</td>
+      <td>
+        <form method="post" action="/products/{{p.id}}/variant" style="display:flex;gap:6px">
+          <input name="name" placeholder="variant name" style="width:120px">
+          <input type="number" step="0.01" name="price_extra" placeholder="+price" style="width:80px">
+          <button class="btn secondary" type="submit">+</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
